@@ -1,0 +1,29 @@
+<div class="bottom-links">
+    <ul class="list" role="presentation">
+        <li><a href="category-all.html">${SoftwareLabel}</a></li>
+        <li><a href="categories.html">${CategoriesLabel}</a></li>
+        <li><a href="updates.html">${UpdatesLabel}</a></li>
+    </ul>
+</div>
+
+<style>
+html, body {
+    -webkit-background-size: auto;
+    background-repeat: repeat-x;
+    background-color: #f5f6f7;
+    background: -webkit-linear-gradient(top, #d5d6d7 0%, #f5f6f7 40%, #f5f6f7 100%);
+    background-attachment: fixed;
+}
+
+div.msc-button-inner.not-installed {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#53a82f), color-stop(100%,#7ad85d));
+}
+
+div.msc-button-inner.not-installed:hover {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#438e1d), color-stop(100%,#53a82f));
+}
+
+div.msc-button-inner.large:not(.installed-not-removable):hover {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#438e1d), color-stop(100%,#53a82f));
+}
+</style>
