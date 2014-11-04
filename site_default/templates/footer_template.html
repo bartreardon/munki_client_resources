@@ -24,63 +24,59 @@ div.msc-button-inner.not-installed:hover {
 }
 
 .imgSlider {
-	display: block;
-	max-height:305px; 
-	max-width:750px; 
-	white-space: nowrap; 
-	overflow-x: scroll; 
-	overflow-y: hidden; 
-	padding:20px; 
-	padding-bottom: 20px;
+    display: block;
+    max-height:305px; 
+    max-width:750px; 
+    white-space: nowrap; 
+    overflow-x: scroll; 
+    overflow-y: hidden; 
+    padding:20px; 
+    padding-bottom: 20px;
 }
 
-.productImageSmall {
-	padding: 5px;
-	vertical-align:middle;
-	height:300px;
+.productImage {
+    padding: 5px;
+    vertical-align:middle;
+}
+.productImage.imgSmall {
+    height:300px;
 }
 
-.productImageLarge {
-	padding: 5px;
-	vertical-align:middle;
-	height:700px;
+.productImage.imgLarge {
+    height:700px;
 }
 
-.dimmer {
-    background:#000;
-    opacity:0.5;
-    position:fixed; /* important to use fixed, not absolute */
-    top:0;
-    left:0;
+.overlay {
     width:100%;
     height:100%;
+    position:fixed;
+    top:0;
+    left:0;
     display:none;
+}
+
+.overlay.pageDimmer {
+    background:#000;
+    opacity:0.5;
     z-index:99;
 }
 
-.imgDisplay {
-	width:100%;
-    height:100%; 
-	position: fixed;
+.overlay.imgDisplay {
     top:100px;
-    bottom:0;
-    left: 0;
-    right: 0;
-    display:none;
     text-align: center;
     z-index:100;
 }
 </style>
 
-<div class="dimmer"></div>
-<div class="imgDisplay" onclick="dim(false);"></div>
+<div class="overlay pageDimmer" id="pageDimmer"></div>
+<div class="overlay imgDisplay" id="imgDisplay" onclick="dim(false);"></div>
 
 <script type="text/javascript">
 function dim(bool,img)
 {
-    if (typeof bool=='undefined') bool=true; // so you can shorten dim(true) to dim()
-    document.getElementsByClassName('dimmer')[0].style.display=(bool?'block':'none');
-    document.getElementsByClassName('imgDisplay')[0].style.display=(bool?'block':'none');
-    document.getElementsByClassName('imgDisplay')[0].innerHTML = '<img class="productImageLarge" src="'+img.src+'">';
+    if (typeof bool=='undefined') bool=true;
+    document.getElementById('pageDimmer').style.display=(bool?'block':'none');
+    document.getElementById('imgDisplay').style.display=(bool?'block':'none');
+    document.getElementById('imgDisplay').innerHTML = '<img class="imgLarge" src="'+img.src+'">';
 } 
 </script>
