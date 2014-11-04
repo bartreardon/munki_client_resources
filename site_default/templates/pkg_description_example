@@ -1,0 +1,21 @@
+// how it would look in a pkginfo
+
+<key>description</key>
+	<string>&lt;p&gt;Testing of image slider with popover&lt;/p&gt;
+&lt;span class="imgSlider"&gt;
+&lt;img src="http://foo.org/munki_repo/images/bar1.png" class="productImage imgSmall" onClick="dim(true,this);"&gt;
+&lt;img src="http://foo.org/munki_repo/images/bar2.png" class="productImage imgSmall" onclick="dim(true,this);"&gt;
+&lt;img src="http://foo.org/munki_repo/images/bar3.png" class="productImage imgSmall" onclick="dim(true,this);"&gt;
+&lt;/span&gt;
+&lt;p&gt;And theres some more text under here&lt;/p&gt;</string>
+
+
+// html
+
+<p>Testing of image slider with popover</p>
+<span class="imgSlider">
+<img src="http://foo.org/munki_repo/images/bar1.png" class="productImage imgSmall" onClick="dim(true,this);">
+<img src="http://foo.org/munki_repo/images/bar2.png" class="productImage imgSmall" onclick="dim(true,this);">
+<img src="http://foo.org/munki_repo/images/bar3.png" class="productImage imgSmall" onclick="dim(true,this);">
+</span>
+<p>And theres some more text under here</p>
