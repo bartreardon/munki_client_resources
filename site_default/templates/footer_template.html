@@ -15,7 +15,7 @@ html, body {
     background-attachment: fixed;
 }
 
-div.msc-button-inner.not-installed {
+div.msc-button-inner.not-installed:not(.large) {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#53a82f), color-stop(100%,#7ad85d));
 }
 
@@ -23,7 +23,64 @@ div.msc-button-inner.not-installed:hover {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#438e1d), color-stop(100%,#53a82f));
 }
 
-div.msc-button-inner.large:not(.installed-not-removable):hover {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#438e1d), color-stop(100%,#53a82f));
+.imgSlider {
+	display: block;
+	max-height:305px; 
+	max-width:750px; 
+	white-space: nowrap; 
+	overflow-x: scroll; 
+	overflow-y: hidden; 
+	padding:20px; 
+	padding-bottom: 20px;
+}
+
+.productImageSmall {
+	padding: 5px;
+	vertical-align:middle;
+	height:300px;
+}
+
+.productImageLarge {
+	padding: 5px;
+	vertical-align:middle;
+	height:700px;
+}
+
+.dimmer {
+    background:#000;
+    opacity:0.5;
+    position:fixed; /* important to use fixed, not absolute */
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display:none;
+    z-index:99;
+}
+
+.imgDisplay {
+	width:100%;
+    height:100%; 
+	position: fixed;
+    top:100px;
+    bottom:0;
+    left: 0;
+    right: 0;
+    display:none;
+    text-align: center;
+    z-index:100;
 }
 </style>
+
+<div class="dimmer"></div>
+<div class="imgDisplay" onclick="dim(false);"></div>
+
+<script type="text/javascript">
+function dim(bool,img)
+{
+    if (typeof bool=='undefined') bool=true; // so you can shorten dim(true) to dim()
+    document.getElementsByClassName('dimmer')[0].style.display=(bool?'block':'none');
+    document.getElementsByClassName('imgDisplay')[0].style.display=(bool?'block':'none');
+    document.getElementsByClassName('imgDisplay')[0].innerHTML = '<img class="productImageLarge" src="'+img.src+'">';
+} 
+</script>
