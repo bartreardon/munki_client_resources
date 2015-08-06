@@ -5,7 +5,7 @@ var appListLen = appList.length;
 for (var i = 0; i < appListLen; i++) {
     if (appList[i].innerHTML.indexOf("AppFoo") > -1){
     	var bannerDiv = document.getElementsByClassName('stage');
-		var extraContent = "<img href=\"#\" alt=\"Branding\" src=\"static/AppFooBanner.png\" />";
-		bannerDiv[0].innerHTML = extraContent + bannerDiv.innerHTML;
+	var extraContent = "<img href=\"#\" alt=\"Branding\" src=\"static/AppFooBanner.png\" />";
+	bannerDiv[0].innerHTML = extraContent + bannerDiv.innerHTML;
     }
 }
