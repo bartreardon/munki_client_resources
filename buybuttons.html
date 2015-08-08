@@ -104,10 +104,22 @@ function buyApp(appName) {
 function checkPurchasedStatus(appName) {
 	// verify if the application has been purchased
 	// this portion will need to be deployment specific
-	if (appName == 'foo') {
-		return true;
-	} else {
-		return false;
+	var url = "http://localhost/munki_repo/purchases.json"; // you want some dynamic generated json here 
+	var request = new XMLHttpRequest();
+	var result = false;
+	
+	request.open('GET', url, false);
+	request.send(null);
+
+	if (request.status === 200) {
+	  var appArray = JSON.parse(request.responseText);
+	  for(var i = 0; i < appArray.length; i++) {
+			if (appName == appArray[i].appName) {
+				//alert('found ' + appName);
+				result = true;
+			}
+		}
 	}
+	return result;
 }
 </script>
