@@ -1,0 +1,103 @@
+// initial version
+// place this in footer_template.html
+
+// getPriceList and buyApp are obviously site dependant and will need
+// some form of backend to support
+
+<style>
+div.msc-button-inner.buy:not(.large) {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7abcff), color-stop(100%,#4096ee));
+}
+
+div.msc-button-inner.buy:hover {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#42A0FF), color-stop(100%,#107EED));
+}
+</style>
+
+<script type="text/javascript">
+function displayPage(url, bool)
+{
+    if (typeof bool=='undefined') bool=true;
+    //document.getElementById('pageDimmer').style.display=(bool?'block':'none');
+    //document.getElementById('pageDisplay').style.display=(bool?'block':'none');
+    //document.getElementById('pageDisplay').innerHTML = '<object type="text/html" data="'+url+'" ></object>';
+    window.open(url,'_self',false);
+    //document.location = url;
+} 
+
+//perform an xmlhttp request to get the price list in JSON format
+
+window.onload = start();
+
+setInterval(function () {start()}, 120000); // refresh the buttons every 2 minutes - if left alone, MSC can revert these to install
+			
+function start() {
+	var url = "http://localhost/munki_repo/pricelist.json"; //custom - call some generator or static file, return json
+	getPriceList(url);
+}
+
+
+function getPriceList(url) {
+	var xmlhttp = new XMLHttpRequest();
+
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			//move this call outside the function?
+			processPrices(JSON.parse(xmlhttp.responseText));
+		}
+	}
+	xmlhttp.open("GET", url, true);
+	xmlhttp.send();
+}
+
+function processPrices(pricesArray) {
+	var installButtons = document.getElementsByClassName('msc-button-inner not-installed');
+	for (var i = 0; i < installButtons.length; i++) {
+		var appName = installButtons[i].id.replace('_action_button_text','');
+		for(var p = 0; p < pricesArray.length; p++) {
+			if (appName == pricesArray[p].appName && checkPurchasedStatus(appName) != true) {
+				var appButton = document.getElementById(installButtons[i].id);
+				if (appButton.innerHTML.indexOf("Install") > -1 && appButton.innerHTML.indexOf("Installed") <= 0) {
+					appButton.innerHTML = 'Purchase : $'+pricesArray[p].price;
+					appButton.parentNode.onclick = function(){ buyApp(this.children[0].id.replace('_action_button_text','')); };
+					appButton.className = appButton.className + ' buy';
+				}
+			}
+		}
+	}
+}
+
+function buyApp(appName) {
+	// custom app processing code goes here
+	// send appname to a url or whathaveyou for purchase.
+	// determine current username, send that as well etc. 
+	alert('Thank you for your purchase of ' + appName);
+	displayPage('http://localhost/munki_repo/pricelist.json', true)
+	//location.reload();
+}
+
+
+function checkPurchasedStatus(appName) {
+	// verify if the application has been purchased
+	// this portion will need to be deployment specific
+	if (appName == 'foo') {
+		return true;
+	} else {
+		return false;
+	}
+}
+/*
+function displayDynamicBanners() {
+// make this more dynamic
+	var appList = document.getElementsByClassName('name');
+	var appListLen = appList.length;
+	for (var i = 0; i < appListLen; i++) {
+		if (appList[i].innerHTML.indexOf("AppFoo") > -1){
+			var bannerDiv = document.getElementsByClassName('stage');
+			var extraContent = "<img href=\"#\" alt=\"Branding\" src=\"static/beta.png\" />";
+			bannerDiv[0].innerHTML = extraContent + bannerDiv.innerHTML;
+		}
+	}
+}
+*/
+</script>
