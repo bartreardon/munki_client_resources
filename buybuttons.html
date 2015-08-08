@@ -71,8 +71,8 @@ function buyApp(appName) {
 	// custom app processing code goes here
 	// send appname to a url or whathaveyou for purchase.
 	// determine current username, send that as well etc. 
-	alert('Thank you for your purchase of ' + appName);
-	displayPage('http://localhost/munki_repo/pricelist.json', true)
+	alert('Thank you for your purchase of ' + appName); //alerts don't display in MSC - testing only
+	displayPage('http://your.org/purchasing/backend/or/whatever.asp?app='+appName, true); //display in MSC app. move to overlay or something perhaps or leave as is.
 	//location.reload();
 }
 
