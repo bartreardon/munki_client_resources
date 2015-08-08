@@ -1,8 +1,8 @@
 // initial version
 // place this in footer_template.html
 
-// getPriceList and buyApp are obviously site dependant and will need
-// some form of backend to support
+// getPriceList, buyApp and checkPurchasedStatus are obviously site dependant and will need
+// some form of backend to support. Could be simple db or other that returns json.
 
 <style>
 div.msc-button-inner.buy:not(.large) {
@@ -43,6 +43,10 @@ div.msc-button-inner.buy:hover {
 <div class="overlay pageDisplay" id="pageDisplay" onclick="displayPage(false);"></div>
 
 <script type="text/javascript">
+
+priceListInit();
+setInterval(function () {priceListInit()}, 120000); // refresh the buttons every 2 minutes - if left alone, MSC can revert these to normal "install"
+
 function displayPage(bool, url)
 {
     if (typeof bool=='undefined') bool=true;
@@ -53,17 +57,10 @@ function displayPage(bool, url)
     //document.location = url;
 } 
 
-//perform an xmlhttp request to get the price list in JSON format
-
-start();
-
-setInterval(function () {start()}, 120000); // refresh the buttons every 2 minutes - if left alone, MSC can revert these to install
-			
-function start() {
+function priceListInit() {
 	var url = "http://localhost/munki_repo/pricelist.json"; //custom - call some generator or static file, return json
 	getPriceList(url);
 }
-
 
 function getPriceList(url) {
 	var xmlhttp = new XMLHttpRequest();
@@ -104,7 +101,6 @@ function buyApp(appName) {
 	//location.reload();
 }
 
-
 function checkPurchasedStatus(appName) {
 	// verify if the application has been purchased
 	// this portion will need to be deployment specific
@@ -114,18 +110,4 @@ function checkPurchasedStatus(appName) {
 		return false;
 	}
 }
-/*
-function displayDynamicBanners() {
-// make this more dynamic
-	var appList = document.getElementsByClassName('name');
-	var appListLen = appList.length;
-	for (var i = 0; i < appListLen; i++) {
-		if (appList[i].innerHTML.indexOf("AppFoo") > -1){
-			var bannerDiv = document.getElementsByClassName('stage');
-			var extraContent = "<img href=\"#\" alt=\"Branding\" src=\"static/beta.png\" />";
-			bannerDiv[0].innerHTML = extraContent + bannerDiv.innerHTML;
-		}
-	}
-}
-*/
 </script>
