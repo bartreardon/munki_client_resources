@@ -12,16 +12,44 @@ div.msc-button-inner.buy:not(.large) {
 div.msc-button-inner.buy:hover {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#42A0FF), color-stop(100%,#107EED));
 }
+
+.overlay {
+    width:100%;
+    height:100%;
+    position:fixed;
+    top:0;
+    left:0;
+    display:none;
+}
+
+.overlay.pageDimmer {
+    background:#000;
+    opacity:0.5;
+    z-index:99;
+}
+
+.overlay.pageDisplay {
+    top: 260px;
+    -webkit-transform: translateX(20%);
+    z-index:999;
+    width:70%;
+    height:50%;
+    -webkit-border-radius: 5px;
+    background:#ffffff;
+}
 </style>
 
+<div class="overlay pageDimmer" id="pageDimmer"></div>
+<div class="overlay pageDisplay" id="pageDisplay" onclick="displayPage(false);"></div>
+
 <script type="text/javascript">
-function displayPage(url, bool)
+function displayPage(bool, url)
 {
     if (typeof bool=='undefined') bool=true;
-    //document.getElementById('pageDimmer').style.display=(bool?'block':'none');
-    //document.getElementById('pageDisplay').style.display=(bool?'block':'none');
-    //document.getElementById('pageDisplay').innerHTML = '<object type="text/html" data="'+url+'" ></object>';
-    window.open(url,'_self',false);
+    document.getElementById('pageDimmer').style.display=(bool?'block':'none');
+    document.getElementById('pageDisplay').style.display=(bool?'block':'none');
+    document.getElementById('pageDisplay').innerHTML = '<object type="text/html" data="'+url+'" type="text/html"><embed src="'+url+'" type="text/html" /></object>';
+    //window.open(url,'_self',false);
     //document.location = url;
 } 
 
@@ -72,7 +100,7 @@ function buyApp(appName) {
 	// send appname to a url or whathaveyou for purchase.
 	// determine current username, send that as well etc. 
 	alert('Thank you for your purchase of ' + appName); //alerts don't display in MSC - testing only
-	displayPage('http://your.org/purchasing/backend/or/whatever.asp?app='+appName, true); //display in MSC app. move to overlay or something perhaps or leave as is.
+	displayPage(true, 'http://your.org/purchasing/backend/or/whatever.asp?app='+appName); //display in MSC app. move to overlay or something perhaps or leave as is.
 	//location.reload();
 }
 
