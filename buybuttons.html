@@ -59,20 +59,8 @@ function displayPage(bool, url)
 
 function priceListInit() {
 	var url = "http://localhost/munki_repo/pricelist.json"; //custom - call some generator or static file, return json
-	getPriceList(url);
-}
-
-function getPriceList(url) {
-	var xmlhttp = new XMLHttpRequest();
-
-	xmlhttp.onreadystatechange = function() {
-		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			//move this call outside the function?
-			processPrices(JSON.parse(xmlhttp.responseText));
-		}
-	}
-	xmlhttp.open("GET", url, true);
-	xmlhttp.send();
+	var pricesArray = jetJson(url);
+	processPrices(pricesArray);
 }
 
 function processPrices(pricesArray) {
@@ -96,30 +84,35 @@ function buyApp(appName) {
 	// custom app processing code goes here
 	// send appname to a url or whathaveyou for purchase.
 	// determine current username, send that as well etc. 
-	alert('Thank you for your purchase of ' + appName); //alerts don't display in MSC - testing only
 	displayPage(true, 'http://your.org/purchasing/backend/or/whatever.asp?app='+appName); //display in MSC app. move to overlay or something perhaps or leave as is.
-	//location.reload();
 }
 
 function checkPurchasedStatus(appName) {
 	// verify if the application has been purchased
 	// this portion will need to be deployment specific
-	var url = "http://localhost/munki_repo/purchases.json"; // you want some dynamic generated json here 
-	var request = new XMLHttpRequest();
+	var url = "http://localhost/munki_repo/purchases.json";
+	var appArray = jetJson(url);
 	var result = false;
+
+	for(var i = 0; i < appArray.length; i++) {
+		if (appName == appArray[i].appName) {
+			result = true;
+		}
+	}
+	return result;
+}
+
+function jetJson(url) {
+	var request = new XMLHttpRequest();
+	var appArray = [];
 	
 	request.open('GET', url, false);
 	request.send(null);
 
 	if (request.status === 200) {
-	  var appArray = JSON.parse(request.responseText);
-	  for(var i = 0; i < appArray.length; i++) {
-			if (appName == appArray[i].appName) {
-				//alert('found ' + appName);
-				result = true;
-			}
-		}
+		appArray = JSON.parse(request.responseText);
 	}
-	return result;
+	return appArray;
 }
+
 </script>
