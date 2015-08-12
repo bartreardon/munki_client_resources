@@ -1,13 +1,27 @@
 <script type="text/javascript">
 // place in footer_template.html
+function jetJson(url) {
+	var request = new XMLHttpRequest();
+	var jsonArray = [];
+	
+	request.open('GET', url, false);
+	request.send(null);
+	if (request.status === 200) {
+		jsonArray = JSON.parse(request.responseText);
+	}
+	return jsonArray;
+}
 
-var appList = document.getElementsByClassName('name');
-var appListLen = appList.length;
-for (var i = 0; i < appListLen; i++) {
-    if (appList[i].innerHTML.indexOf("AppFoo") > -1){
-    	var bannerDiv = document.getElementsByClassName('stage');
-	var extraContent = "<img href=\"#\" alt=\"Branding\" src=\"static/AppFooBanner.png\" />";
-	bannerDiv[0].innerHTML = extraContent + bannerDiv.innerHTML;
-    }
+var displayedAppList = document.getElementsByClassName('name');
+var appsToCheck = jetJson('http://your.org/munki_repo/somelist.json')
+
+for (var i = 0; i < displayedAppList.length; i++) {
+	for (var p = 0; p < appsToCheck.length; p++) {
+	    if (displayedAppList[i].innerHTML.indexOf(appsToCheck[p].appName) > -1){
+	    	var bannerDiv = document.getElementsByClassName('stage');
+		var extraContent = "<img href=\"#\" alt=\"Branding\" src=\""appsToCheck[p].appBannerLink"\" />";
+		bannerDiv[0].innerHTML = extraContent + bannerDiv.innerHTML;
+	    }
+	}
 }
 </script>
