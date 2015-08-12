@@ -1,0 +1,25 @@
+<!--
+Changing the colour of things is relatively simple. Everything is controlled by the base.css that 
+comes with MSC. If you want to change something then you just overide it here
+
+Examples here are:
+  - adding a background gradient
+  - changing the INSTALL buttons from grey to green
+  
+-->
+
+<style>
+html, body {
+    -webkit-background-size: auto;
+    background-repeat: repeat-x;
+    background-color: #f5f6f7;
+    background: -webkit-linear-gradient(top, #d5d6d7 0%, #f5f6f7 40%, #f5f6f7 100%);
+    background-attachment: fixed;
+}
+div.msc-button-inner.not-installed:not(.large) {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#53a82f), color-stop(100%,#7ad85d));
+}
+div.msc-button-inner.not-installed:hover {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#438e1d), color-stop(100%,#53a82f));
+}
+</style>
