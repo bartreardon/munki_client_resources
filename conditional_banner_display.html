@@ -39,15 +39,15 @@ for (var i = 0; i < displayedAppList.length; i++) {
 	    if (displayedAppList[i].innerHTML.indexOf(appsToCheck[p].appName) > -1){
 	    	var bannerDiv = document.getElementsByClassName('stage');
 	    	if (appsToCheck[p].appAction == "add") {
-				var extraContent = "<img href=\"" + appsToCheck[p].appBannerLink + "\" alt=\"Branding\" src=\"" + appsToCheck[p].appBannerImage + "\" />";
-				bannerDiv[0].innerHTML = bannerDiv[0].innerHTML + extraContent;
-			} else if (appsToCheck[p].appAction == "remove") {
-				for (n=0; n<bannerDiv[0].children.length; n++) {
-					if (bannerDiv[0].children[n].src.indexOf(appsToCheck[p].appBannerImage) > -1) {
-						bannerDiv[0].removeChild(bannerDiv[0].children[n]);
-					}
+			var extraContent = "<img href=\"" + appsToCheck[p].appBannerLink + "\" alt=\"Branding\" src=\"" + appsToCheck[p].appBannerImage + "\" />";
+			bannerDiv[0].innerHTML = bannerDiv[0].innerHTML + extraContent;
+		} else if (appsToCheck[p].appAction == "remove") {
+			for (n=0; n<bannerDiv[0].children.length; n++) {
+				if (bannerDiv[0].children[n].src.indexOf(appsToCheck[p].appBannerImage) > -1) {
+					bannerDiv[0].removeChild(bannerDiv[0].children[n]);
 				}
 			}
+		}
 	    }
 	}
 }
