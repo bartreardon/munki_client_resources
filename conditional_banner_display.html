@@ -17,7 +17,7 @@ Could be a static file or could be generated from a database - change to whateve
 
 <script type="text/javascript">
 // place in footer_template.html
-function jetJson(url) {
+function getJson(url) {
 	var request = new XMLHttpRequest();
 	var jsonArray = [];
 	
@@ -30,7 +30,7 @@ function jetJson(url) {
 }
 
 var displayedAppList = document.getElementsByClassName('name');
-var appsToCheck = jetJson('http://your.org/munki_repo/somelist.json')
+var appsToCheck = getJson('http://your.org/munki_repo/somelist.json')
 
 // not sure which order is more efficient, loops probably need to be reversed.
 for (var i = 0; i < displayedAppList.length; i++) {
