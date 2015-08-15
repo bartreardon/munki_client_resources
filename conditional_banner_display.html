@@ -1,16 +1,45 @@
 <!--
 Let one display banners, conditional if certain items are visible, or alternatly remove them
-To do this it does a simple parse of the current view and if the app you want is present then it displays the banner.
+To do this it does a simple parse of the current view and runs the conditions dependant if your app
+is present in MSC or not.
 
-this script uses json that looks something like this
+This script uses json structured as follows
 Could be a static file or could be generated from a database - change to whatever you need.
+
+appame:			The app name as it is in munki. if you use an arbitary name it won't find anything
+
+appBannerImage:		Can use images included in your client customisations zip prefixed with static/foo.png
+			otherwise can be a URL
+
+appBannerLink:		the link you want your banner to go to
+
+appAvailableRunAction	If the app is availabe (i.e. visible in MSC), true = perform action, false, don't perform action
+			you can use this to do things like not display a banner if an app is available.
+			If an app is not available then the action is performed
+
+appInstalledRunAction: 	If the app is Installed, true = perform action, false, don't perform action
+			you can use this to do things like not display a banner if an app is already installed or
+			vice versa. An installed status implies it is visible in MSC
+			
+action:			The action you want to perform, show or hide a banner based on the conditions set.
+
 
 [
     {
-        "appName": "FooApp",
-        "appBannerImage": "static/branding_test.png",
+        "appName": "FoorApp1",
+        "appBannerImage": "static/FooBranding1.png",
         "appBannerLink": "#",
-        "appAction": "add|remove"
+        "appAvailableRunAction": true|false,
+        "appInstalledRunAction": true|false,
+        "action": "hide|show"
+    },
+    {
+        "appName": "FooApp2",
+        "appBannerImage": "static/FooBranding1.png",
+        "appBannerLink": "#",
+        "appAvailableRunAction": true|false,
+        "appInstalledRunAction": true|false,
+        "action": "hide|show"
     }
 ]
 
@@ -19,36 +48,114 @@ Could be a static file or could be generated from a database - change to whateve
 
 <script type="text/javascript">
 // place in footer_template.html
-function getJson(url) {
-	var request = new XMLHttpRequest();
-	var jsonArray = [];
-	
-	request.open('GET', url, false);
-	request.send(null);
-	if (request.status === 200) {
-		jsonArray = JSON.parse(request.responseText);
-	}
-	return jsonArray;
+
+conditionalBannersInit();
+
+function conditionalBannersInit() {
+	var displayedAppList = document.getElementsByClassName('name');
+	var appsToCheck = getJson('http://127.0.0.1/munki_repo/bannertest.json') //replace with your json link
+	var bannerDiv = document.getElementsByClassName('stage');
+
+	setAllInstaledStatus(displayedAppList, appsToCheck);
+	setAllVisibleStatus(displayedAppList, appsToCheck);
+	processConditionalBanners(appsToCheck, bannerDiv);
 }
 
-var displayedAppList = document.getElementsByClassName('name');
-var appsToCheck = getJson('http://127.0.0.1/munki_repo/bannertest.json') //replace with your json link
-// not sure which order is more efficient, loops probably need to be reversed.
-for (var i = 0; i < displayedAppList.length; i++) {
-	for (var p = 0; p < appsToCheck.length; p++) {
-	    if (displayedAppList[i].innerHTML.indexOf(appsToCheck[p].appName) > -1){
-	    	var bannerDiv = document.getElementsByClassName('stage');
-	    	if (appsToCheck[p].appAction == "add") {
-			var extraContent = "<img href=\"" + appsToCheck[p].appBannerLink + "\" alt=\"Branding\" src=\"" + appsToCheck[p].appBannerImage + "\" />";
-			bannerDiv[0].innerHTML = bannerDiv[0].innerHTML + extraContent;
-		} else if (appsToCheck[p].appAction == "remove") {
-			for (n=0; n<bannerDiv[0].children.length; n++) {
-				if (bannerDiv[0].children[n].src.indexOf(appsToCheck[p].appBannerImage) > -1) {
-					bannerDiv[0].removeChild(bannerDiv[0].children[n]);
-				}
-			}
+if (typeof window.getJson === 'undefined') {
+	function getJson(url) {
+		var request = new XMLHttpRequest();
+		var jsonArray = [];
+	
+		request.open('GET', url, false);
+		request.send(null);
+		if (request.status === 200) {
+			jsonArray = JSON.parse(request.responseText);
 		}
-	    }
+		return jsonArray;
 	}
 }
-</script>
+
+function addBanner(bannerNode, image, imageLink) {
+	// check to see if the banner is already visible so we don't have duplicates
+	for (i=0; i<bannerNode[0].children.length; i++) {
+		if (bannerNode[0].children[i].src.indexOf(image) > -1) {
+			return;
+		}
+	}
+	var extraContent = "<img href=\"" + imageLink + "\" alt=\"Branding\" src=\"" + image + "\" />";
+	bannerNode[0].innerHTML = extraContent + bannerNode[0].innerHTML;
+}
+
+function removeBanner(bannerNode, image) {
+	for (i=0; i<bannerNode[0].children.length; i++) {
+		if (bannerNode[0].children[i].src.indexOf(image) > -1) {
+			bannerNode[0].removeChild(bannerNode[0].children[i]);
+		}
+	}
+}
+
+function setAllInstaledStatus(displayedAppList, appsToCheck) {
+	// record status of installed for each app in appsToCheck
+	for (var i = 0; i < displayedAppList.length; i++) {
+		var currentAppNodeName = displayedAppList[i].title
+		for (var p = 0; p < appsToCheck.length; p++) {
+			if (!appsToCheck[p].hasOwnProperty('installedStatus')) {
+				appsToCheck[p].installedStatus = "not_available";
+			}
+			if (currentAppNodeName == appsToCheck[p].appName) {
+				appsToCheck[p].installedStatus = displayedAppList[i].parentNode.children[2].className;
+			}
+		}
+	}
+}
+
+function setAllVisibleStatus(displayedAppList, appsToCheck) {
+	// record status of visible for each app in appsToCheck
+	for (var p = 0; p < appsToCheck.length; p++) {
+		var appToCheckName = appsToCheck[p].appName
+		for  (var i = 0; i < displayedAppList.length; i++){
+			if (!appsToCheck[p].hasOwnProperty('visible')) {
+				appsToCheck[p].visible=false;
+			}
+			if (appToCheckName == displayedAppList[i].title) {
+				appsToCheck[p].visible=true;
+			}				
+		}
+	}
+}
+
+function processConditionalBanners(appsToCheck, bannerDiv) {
+	for (var p = 0; p < appsToCheck.length; p++) {
+		if (appsToCheck[p].action == "show") {
+			if (appsToCheck[p].visible == true) {
+				if (appsToCheck[p].installedStatus == 'installed') {
+					if (appsToCheck[p].appInstalledRunAction == true) {
+						addBanner(bannerDiv, appsToCheck[p].appBannerImage, appsToCheck[p].appBannerLink);
+					}
+				} else {
+					if (appsToCheck[p].appAvailableRunAction == true) {
+						addBanner(bannerDiv, appsToCheck[p].appBannerImage, appsToCheck[p].appBannerLink);
+					}
+				}
+			} else {
+				addBanner(bannerDiv, appsToCheck[p].appBannerImage, appsToCheck[p].appBannerLink);
+			}
+					
+		} else if (appsToCheck[p].action == "hide") {
+
+			if (appsToCheck[p].visible == true) {
+				if (appsToCheck[p].installedStatus == 'installed') {
+					if (appsToCheck[p].appInstalledRunAction == true) {
+						removeBanner(bannerDiv, appsToCheck[p].appBannerImage);
+					}
+				} else  {
+					if (appsToCheck[p].appAvailableRunAction == true) {
+						removeBanner(bannerDiv, appsToCheck[p].appBannerImage);
+					}
+				}
+			} else {
+				removeBanner(bannerDiv, appsToCheck[p].appBannerImage);
+			}
+		}	
+	}
+}
