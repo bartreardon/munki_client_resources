@@ -59,7 +59,7 @@ function displayPage(bool, url)
 
 function priceListInit() {
 	var url = "http://localhost/munki_repo/pricelist.json"; //custom - call some generator or static file, return json
-	var pricesArray = jetJson(url);
+	var pricesArray = getJson(url);
 	processPrices(pricesArray);
 }
 
@@ -91,7 +91,7 @@ function checkPurchasedStatus(appName) {
 	// verify if the application has been purchased
 	// this portion will need to be deployment specific
 	var url = "http://localhost/munki_repo/purchases.json";
-	var appArray = jetJson(url);
+	var appArray = getJson(url);
 	var result = false;
 
 	for(var i = 0; i < appArray.length; i++) {
@@ -102,7 +102,7 @@ function checkPurchasedStatus(appName) {
 	return result;
 }
 
-function jetJson(url) {
+function getJson(url) {
 	var request = new XMLHttpRequest();
 	var appArray = [];
 	
