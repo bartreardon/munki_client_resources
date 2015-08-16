@@ -1,0 +1,38 @@
+<style>
+/*
+Changes the buttons to christmas colours with a soft transition
+ - (INSTALL) -> flat green to light green on hover
+ - (REMOVE)  -> flat grey to red on hover
+ - (PURCHASE) -> flat blue to light blue on hover (used with the buy-buttons CSS and JS changes)
+ 
+ remove or comment out non :hover elements to keep the default and only go colourful on hover
+*/
+
+div.msc-button-inner {
+	transition: background-color 0.2s;
+}
+
+div.msc-button-inner.not-installed:not(.large) {
+    background: #53a82f;
+}
+
+div.msc-button-inner.not-installed:hover {
+    background: #7ad85d;
+}
+
+div.msc-button-inner.buy:not(.large) {
+    background: #107EED;
+}
+
+div.msc-button-inner.buy:hover {
+    background: #50a6ff;
+}
+
+div.msc-button-inner.installed {
+    background: #A8AAAF;
+}
+
+div.msc-button-inner.installed:hover {
+    background: #cc1a2f;
+}
+<style>
