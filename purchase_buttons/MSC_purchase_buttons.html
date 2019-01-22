@@ -12,37 +12,16 @@ div.msc-button-inner.buy:not(.large) {
 div.msc-button-inner.buy:hover {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#42A0FF), color-stop(100%,#107EED));
 }
-
-.overlay {
-    width:100%;
-    height:100%;
-    position:fixed;
-    top:0;
-    left:0;
-    display:none;
-}
-
-.overlay.pageDimmer {
-    background:#000;
-    opacity:0.5;
-    z-index:99;
-}
-
-.overlay.pageDisplay {
-    top: 260px;
-    -webkit-transform: translateX(20%);
-    z-index:999;
-    width:70%;
-    height:50%;
-    -webkit-border-radius: 5px;
-    background:#ffffff;
-}
 </style>
 
 <div class="overlay pageDimmer" id="pageDimmer"></div>
 <div class="overlay pageDisplay" id="pageDisplay" onclick="displayPage(false);"></div>
 
 <script type="text/javascript">
+
+userName = MSCUser();
+purchasesArray =  userPurchasesInit(userName);
+	
 
 priceListInit();
 setInterval(function () {priceListInit()}, 120000); // refresh the buttons every 2 minutes - if left alone, MSC can revert these to normal "install"
@@ -59,47 +38,51 @@ function displayPage(bool, url)
 
 function priceListInit() {
 	var url = "http://localhost/munki_repo/pricelist.json"; //custom - call some generator or static file, return json
-	var pricesArray = getJson(url);
-	processPrices(pricesArray);
+	return getJson(url);
+}
+	
+function userPurchasesInit(currentUser) {
+    var url = "http://localhost/munki_repo/purchases.aspx?username="+currentUser;
+    return getJson(url);
 }
 
 function processPrices(pricesArray) {
-	var installButtons = document.getElementsByClassName('msc-button-inner not-installed');
-	for (var i = 0; i < installButtons.length; i++) {
-		var appName = installButtons[i].id.replace('_action_button_text','');
-		for(var p = 0; p < pricesArray.length; p++) {
-			if (appName == pricesArray[p].appName && checkPurchasedStatus(appName) != true) {
-				var appButton = document.getElementById(installButtons[i].id);
-				if (appButton.innerHTML.indexOf("Install") > -1 && appButton.innerHTML.indexOf("Installed") <= 0) {
-					appButton.innerHTML = 'Purchase : $'+pricesArray[p].price;
-					appButton.parentNode.onclick = function(){ buyApp(this.children[0].id.replace('_action_button_text','')); };
-					appButton.className = appButton.className + ' buy';
-				}
-			}
-		}
-	}
+    var installButtons = document.getElementsByClassName('msc-button-inner not-installed');
+    for (var i = 0; i < installButtons.length; i++) {
+        var appName = installButtons[i].id.replace('_action_button_text','');
+        for(var p = 0; p < pricesArray.length; p++) {
+            if (pricesArray[p].appName.includes(appName) && checkPurchasedStatus(appName) != true) {
+                var appButton = document.getElementById(installButtons[i].id);
+                if (appButton.innerHTML.indexOf("Install") > -1 && appButton.innerHTML.indexOf("Installed") <= 0) {
+                    if (pricesArray[p].type.indexOf("Perpetual") > -1) {
+                        licType = "Purchase"
+                    } else {
+                        licType = pricesArray[p].type
+                    }
+                    appButton.innerHTML = licType+' : $'+pricesArray[p].price;
+                    appButton.parentNode.onclick = function(){ buyApp(this.children[0].id.replace('_action_button_text','')); };
+                    appButton.className = appButton.className + ' buy';
+                }
+            }
+        }
+    }
 }
 
 function buyApp(appName) {
-	// custom app processing code goes here
-	// send appname to a url or whathaveyou for purchase.
-	// determine current username, send that as well etc. 
-	displayPage(true, 'http://your.org/purchasing/backend/or/whatever.asp?app='+appName); //display in MSC app. move to overlay or something perhaps or leave as is.
+    // opens the app purchase form - integrated auth
+    displayPage(true, 'http://munki.your.org/Purchase/'+appName);
 }
 
-function checkPurchasedStatus(appName) {
-	// verify if the application has been purchased
-	// this portion will need to be deployment specific
-	var url = "http://localhost/munki_repo/purchases.json";
-	var appArray = getJson(url);
-	var result = false;
-
-	for(var i = 0; i < appArray.length; i++) {
-		if (appName == appArray[i].appName) {
-			result = true;
-		}
-	}
-	return result;
+function checkPurchasedStatus(appName, currentUser) {
+    // verify if the application has been purchased
+    // this portion will need to be deployment specific
+    var result = false;
+    for(var i = 0; i < purchasesArray.length; i++) {
+        if (appName == purchasesArray[i].appName+ purchasesArray[i].appVersion || appName == purchasesArray[i].appName) {
+            result = true;
+        }
+    }
+    return result;
 }
 
 function getJson(url) {
@@ -108,11 +91,17 @@ function getJson(url) {
 	
 	request.open('GET', url, false);
 	request.send(null);
-
 	if (request.status === 200) {
 		appArray = JSON.parse(request.responseText);
 	}
 	return appArray;
+}
+	
+
+function MSCUser() {
+    var pathArray = window.location.pathname.split( '/' )
+    var userName = pathArray[2];
+    return userName;
 }
 
 </script>
